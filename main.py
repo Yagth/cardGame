@@ -3,9 +3,7 @@ import random
 import copy
 import math
 
-# --- 1. Card Database (from game_data.json) ---
-# In a real app, you'd load this from the JSON file.
-# For a single-file script, we'll embed it.
+# This Game data is what defines the rules and the cards available in the game.
 GAME_DATA = {
     "gameInfo": {
         "name": "The War of the Ages"
@@ -53,7 +51,6 @@ GAME_DATA = {
 }
 
 
-# --- 2. Core Game Classes ---
 
 class Card:
     """ Represents a single card, with its stats and current state. """
@@ -221,13 +218,13 @@ class GameState:
             moves.append(("PASS MAIN", state_pass))
 
         elif self.phase == "BATTLE":
-            # 1. Option to attack
+            # Option to attack
             if not self.has_attacked:
                 attacking_cards = list(enumerate(current_player.get_attacking_cards()))
                 for i, attacker_card in attacking_cards:
                     attacker_slot_index = current_player.field.index(attacker_card)
                     
-                    # A. Attack opponent's cards
+                    # Attack opponent's cards
                     target_cards = list(enumerate(opponent_player.get_attackable_cards()))
                     if target_cards:
                         for j, target_card in target_cards:
@@ -235,12 +232,12 @@ class GameState:
                             state_attack_card = self.perform_attack(attacker_slot_index, target_slot_index)
                             moves.append((f"ATTACK {attacker_card.name} -> {target_card.name}", state_attack_card))
                     
-                    # B. Attack player directly if field is empty
+                    # Attack player directly if field is empty
                     else:
                         state_attack_player = self.perform_direct_attack(attacker_slot_index)
                         moves.append((f"ATTACK {attacker_card.name} -> PLAYER", state_attack_player))
 
-            # 2. Option to pass (always available)
+            # Option to pass (always available)
             state_pass = self.deep_copy_state()
             state_pass.phase = "END"
             moves.append(("PASS BATTLE", state_pass))
@@ -299,7 +296,7 @@ class GameState:
         return copy.deepcopy(self)
 
 
-# --- 3. Minimax AI Logic ---
+# Minimax AI Logic
 
 class MinimaxAI:
     """ AI agent that uses the Minimax algorithm to find the best move. """
@@ -397,10 +394,10 @@ class MinimaxAI:
 
         score = 0
 
-        # 1. Player HP (most important)
+        # Player HP (most important)
         score += (ai_player.hp - opponent_player.hp) * 10
 
-        # 2. Field presence (value of cards on field)
+        # Field presence (value of cards on field)
         ai_field_score = 0
         for card in ai_player.field:
             if card:
@@ -420,14 +417,13 @@ class MinimaxAI:
 
         score += (ai_field_score - opponent_field_score) * 5
 
-        # 3. Hand advantage (more options)
+        # Hand advantage (more options)
         score += (len(ai_player.hand) - len(opponent_player.hand)) * 2
 
         return score
 
 
-# --- 4. Main Game Loop ---
-
+# Main Game Loop
 class Game:
     """ Main class to control the game flow. """
     def __init__(self):
@@ -644,7 +640,6 @@ class Game:
         print("="*50)
 
 
-# --- 5. Start the Game ---
 if __name__ == "__main__":
     game = Game()
     game.run()
