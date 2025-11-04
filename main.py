@@ -717,6 +717,11 @@ class MinimaxAI:
         # Hand advantage (more options)
         score += (len(ai_player.hand) - len(opponent_player.hand)) * 2
 
+        for card in ai_player.hand:
+            if card.get_def() > card.get_atk():
+                score += 9
+
+
         return score
 
 
